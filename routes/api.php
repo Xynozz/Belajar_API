@@ -1,14 +1,14 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BeritaController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\UserController;
-use App\Models\Kategori;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
+Route::get('/user/profile', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
@@ -18,7 +18,13 @@ Route::get('/user', function (Request $request) {
 // Route::put('kategori/{id}', [KategoriController::class, 'update']);
 // Route::delete('kategori/{id}', [KategoriController::class, 'destroy']);
 
-Route::resource('kategori', KategoriController::class)->except('edit','create');
-Route::resource('tag', TagController::class)->except('edit','create');
-Route::resource('user', UserController::class)->except('edit','create');
-Route::resource('berita', BeritaController::class)->except('edit','create');
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::resource('kategori', KategoriController::class)->except('edit', 'create');
+    Route::resource('tag', TagController::class)->except('edit', 'create');
+    Route::resource('user', UserController::class)->except('edit', 'create');
+    Route::resource('berita', BeritaController::class)->except('edit', 'create');
+    Route::post('logout', [AuthController::class, 'logout']);
+});
